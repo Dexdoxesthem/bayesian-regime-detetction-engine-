@@ -1,10 +1,5 @@
-# Data (large files, tracked via DVC)
-data/raw/
-data/processed/
+# Data cache (regenerated from raw)
 data/cache/
-*.parquet
-*.csv
-*.xlsx
 
 # Logs / runtime
 *.log

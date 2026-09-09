@@ -237,6 +237,22 @@ def regime_ic_artefact():
     return {"date": date, "regime": regime_idx, "label": regime_text, "confidence": round(confidence, 4), "recommendation": rec}
 
 
+# Serve React static build in production (MUST be last — catch-all route)
+_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+if _dist.exists():
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/assets", StaticFiles(directory=_dist / "assets"), name="static")
+
+    from fastapi.responses import FileResponse
+
+    @app.get("/{full_path:path}")
+    async def serve_spa(full_path: str):
+        file_path = _dist / full_path
+        if file_path.is_file():
+            return FileResponse(file_path)
+        return FileResponse(_dist / "index.html")
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: regime-engine
+    runtime: docker
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: PORT
+        value: "8080"
+    healthCheckPath: /api/regime/current
+    autoDeploy: true
