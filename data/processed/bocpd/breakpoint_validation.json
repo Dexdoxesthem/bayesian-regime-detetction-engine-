@@ -1,0 +1,22 @@
+{
+  "Taper Tantrum": {
+    "max_changepoint_prob": 0.003968253968253969,
+    "detected": false,
+    "date_range": "2013-05-02 to 2013-07-01"
+  },
+  "IL&FS / NBFC Crisis": {
+    "max_changepoint_prob": 0.003968253968253969,
+    "detected": false,
+    "date_range": "2018-08-21 to 2018-10-19"
+  },
+  "COVID Crash": {
+    "max_changepoint_prob": 0.003968253968253969,
+    "detected": false,
+    "date_range": "2020-01-31 to 2020-03-31"
+  },
+  "Election Results": {
+    "max_changepoint_prob": 0.003968253968253969,
+    "detected": false,
+    "date_range": "2024-05-06 to 2024-07-04"
+  }
+}

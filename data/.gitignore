@@ -1,10 +1,6 @@
-*.parquet
-*.csv
-*.xlsx
 *.h5
 *.hdf5
 *.pkl
 *.joblib
 cache/
 raw/
-processed/

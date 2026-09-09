@@ -1,0 +1,7 @@
+{
+  "bma_weights": {
+    "hmm": 0.0,
+    "rs_var": 1.0,
+    "bdl_mc": 0.0
+  }
+}

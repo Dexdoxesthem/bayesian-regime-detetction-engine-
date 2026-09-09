@@ -33,6 +33,10 @@ COPY data/ data/
 COPY r/ r/
 COPY --from=frontend-build /app/frontend/dist /app/frontend/dist
 
+# Precompute all API responses so the service responds instantly on boot
+# (trains HMM + Deep Ensemble once here, bakes results into the image)
+RUN python api/precompute.py
+
 EXPOSE 8080
 
 CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8080}"]

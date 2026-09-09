@@ -1,0 +1,29 @@
+{
+  "report_date": "2026-08-28",
+  "current_regime": 0,
+  "regime_label": "Risk-On \u2014 Equity overweight warranted. Favor cyclicals, small/midcap beta. Reduce duration, add commodity exposure.",
+  "confidence": 0.6504675182700569,
+  "probability_distribution": {
+    "regime_0": 0.6504675182700569,
+    "regime_1": 0.3188721340621415,
+    "regime_2": 0.027894334867596626,
+    "regime_3": 0.0024116714484989643,
+    "regime_4": 0.00035432426375336945
+  },
+  "conditional_recommendation": "Based on ensemble output as of 2026-08-28: the market is in a Risk-On \u2014 Equity overweight warranted. Favor cyclicals, small/midcap beta. Reduce duration, add commodity exposure. regime with 65.0% confidence.",
+  "model_lineage": {
+    "ensemble_method": "Bayesian Model Averaging + Constrained Stacking",
+    "members": [
+      "Frequentist HMM (5-state)",
+      "RS-VAR",
+      "BOCPD"
+    ],
+    "conformalized": true,
+    "coverage_guarantee": "90% marginal coverage (finite-sample valid)"
+  },
+  "risk_budget": {
+    "max_drawdown_limit": "-15%",
+    "tracking_error_budget": "3-5%",
+    "rebalance_frequency": "Weekly (or on regime shift)"
+  }
+}

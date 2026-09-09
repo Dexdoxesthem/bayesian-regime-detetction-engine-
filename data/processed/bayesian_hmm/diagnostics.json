@@ -1,0 +1,17 @@
+{
+  "model_type": "bayesian_hmm",
+  "n_regimes": 5,
+  "n_samples_total": 4284,
+  "n_samples_mcmc": 800,
+  "n_chains": 2,
+  "n_draws": 500,
+  "n_tune": 500,
+  "max_rhat": 3.032416267099763,
+  "rhat_ok": false,
+  "min_ess_bulk": 2.2941935785850505,
+  "min_ess_tail": 4.869918860863378,
+  "ess_ok": false,
+  "n_divergences": 0,
+  "divergences_ok": true,
+  "mcmc_ok": false
+}

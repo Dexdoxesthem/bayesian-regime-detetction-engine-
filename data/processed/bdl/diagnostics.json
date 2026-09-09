@@ -1,0 +1,36 @@
+{
+  "mc_dropout": {
+    "model_type": "mc_dropout",
+    "framework": "pytorch",
+    "input_dim": 8,
+    "n_classes": 5,
+    "hidden_dims": [
+      32,
+      16
+    ],
+    "dropout_rate": 0.3,
+    "n_mc_samples": 50,
+    "n_epochs": 50,
+    "train_accuracy": 0.8870056497175142,
+    "val_accuracy": 0.9837962962962963,
+    "n_train": 3894,
+    "n_val": 432
+  },
+  "variational_bnn": {
+    "model_type": "variational_bnn",
+    "framework": "pytorch",
+    "input_dim": 8,
+    "n_classes": 5,
+    "kl_weight": 0.01,
+    "prior_sigma": 1.0,
+    "train_accuracy": 0.9450436569080637,
+    "val_accuracy": 0.9791666666666666
+  },
+  "deep_ensemble": {
+    "model_type": "deep_ensemble",
+    "framework": "pytorch",
+    "M": 3,
+    "input_dim": 8,
+    "n_classes": 5
+  }
+}

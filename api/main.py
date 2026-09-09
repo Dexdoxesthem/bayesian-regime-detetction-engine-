@@ -1,5 +1,7 @@
 """FastAPI backend for Regime Engine dashboard."""
+import json
 import sys
+import threading
 from pathlib import Path
 from datetime import datetime
 
@@ -20,6 +22,21 @@ app = FastAPI(title="Regime Engine API", version="1.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 _CACHE = {}
+_LOCK = threading.Lock()
+CACHE_FILE = PROCESSED_DIR / "api_cache.json"
+
+
+def _load_response_cache():
+    """Load precomputed API responses baked into the image (fast boot)."""
+    if CACHE_FILE.exists():
+        try:
+            return json.loads(CACHE_FILE.read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"WARN: failed to read api_cache.json: {e}", flush=True)
+    return None
+
+
+_RESP_CACHE = _load_response_cache()
 
 
 def _load_features():
@@ -90,12 +107,20 @@ def _run_models(features):
 
 def _get_models(features):
     if "models" not in _CACHE:
-        _CACHE["models"] = _run_models(features)
+        with _LOCK:
+            if "models" not in _CACHE:
+                _CACHE["models"] = _run_models(features)
     return _CACHE["models"]
 
 
-@app.get("/api/regime/current")
-def regime_current():
+def _cached(key, builder):
+    """Return precomputed payload if available, else compute (eager, thread-safe)."""
+    if _RESP_CACHE is not None and key in _RESP_CACHE:
+        return _RESP_CACHE[key]
+    return builder()
+
+
+def _build_current():
     features = _load_features()
     models = _get_models(features)
     last_probs = np.array(models["hmm_probs"][-1])
@@ -114,8 +139,12 @@ def regime_current():
     }
 
 
-@app.get("/api/regime/history")
-def regime_history():
+@app.get("/api/regime/current")
+def regime_current():
+    return _cached("current", _build_current)
+
+
+def _build_history():
     features = _load_features()
     merged = _load_merged()
     models = _get_models(features)
@@ -142,8 +171,12 @@ def regime_history():
     }
 
 
-@app.get("/api/regime/crisis")
-def regime_crisis():
+@app.get("/api/regime/history")
+def regime_history():
+    return _cached("history", _build_history)
+
+
+def _build_crisis():
     return {
         "crises": [
             {
@@ -195,8 +228,12 @@ def regime_crisis():
     }
 
 
-@app.get("/api/models/performance")
-def models_performance():
+@app.get("/api/regime/crisis")
+def regime_crisis():
+    return _cached("crisis", _build_crisis)
+
+
+def _build_performance():
     return {
         "models": [
             {"name": "Frequentist HMM", "type": "hmm", "bic": 50804.9, "converged": True, "n_regimes": 5},
@@ -213,8 +250,12 @@ def models_performance():
     }
 
 
-@app.get("/api/regime/ic-artefact")
-def regime_ic_artefact():
+@app.get("/api/models/performance")
+def models_performance():
+    return _cached("performance", _build_performance)
+
+
+def _build_ic_artefact():
     features = _load_features()
     models = _get_models(features)
     last_probs = np.array(models["hmm_probs"][-1])
@@ -235,6 +276,11 @@ def regime_ic_artefact():
         rec = f"As of {date}: Market is in {regime_text} (confidence {confidence:.1%}). Post-Shock: tactical recovery trades possible, monitor credit spreads."
 
     return {"date": date, "regime": regime_idx, "label": regime_text, "confidence": round(confidence, 4), "recommendation": rec}
+
+
+@app.get("/api/regime/ic-artefact")
+def regime_ic_artefact():
+    return _cached("ic", _build_ic_artefact)
 
 
 # Serve React static build in production (MUST be last — catch-all route)

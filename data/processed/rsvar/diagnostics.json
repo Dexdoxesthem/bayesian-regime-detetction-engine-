@@ -1,0 +1,22 @@
+{
+  "model_type": "rs_var_statsmodels",
+  "n_regimes": 2,
+  "n_features": 1,
+  "n_samples": 4326,
+  "endog_names": [
+    "nifty50_return_1d"
+  ],
+  "aic": 11331.864616599021,
+  "bic": 11376.469788534583,
+  "log_likelihood": -5658.932308299511,
+  "converged": true,
+  "regime_params": {
+    "regime_0": 0.9816232886139277,
+    "regime_1": 0.074906640705376
+  },
+  "transition_matrix": null,
+  "regime_pct_time": {
+    "regime_0": 0.8208092485549133,
+    "regime_1": 0.1791907514450867
+  }
+}

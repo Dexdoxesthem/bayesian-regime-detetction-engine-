@@ -1,0 +1,17 @@
+{
+  "checks_passed": 1,
+  "checks_total": 2,
+  "results": {
+    "python_hmm": {
+      "n_regimes": 5,
+      "distribution": {
+        "0": 0.21802054154995332,
+        "1": 0.09640522875816994,
+        "2": 0.33986928104575165,
+        "4": 0.32936507936507936,
+        "3": 0.016339869281045753
+      }
+    },
+    "transition_matrix_valid": true
+  }
+}
