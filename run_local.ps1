@@ -13,7 +13,6 @@
 
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$VenvReady = $false
 
 function Write-Step($Msg) { Write-Host "`n==> $Msg" -ForegroundColor Cyan }
 
@@ -64,19 +63,27 @@ if (-not (Test-Path "$Root\frontend\node_modules\.vite")) {
 }
 
 # ---- 3. Kill anything already on our ports ----------------------------------
-foreach ($port in 8000, 5173) {
+foreach ($port in @(8000) + @(5173..5179)) {
     $conns = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
     if ($conns) {
         Write-Host "  Port $port busy - stopping process(es) (PID $($conns.OwningProcess -join ', '))"
         $conns | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }
-        Start-Sleep -Milliseconds 800
+        Start-Sleep -Milliseconds 400
     }
 }
+# Also stop any lingering vite dev servers
+Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" -ErrorAction SilentlyContinue |
+    Where-Object { $_.CommandLine -match 'vite' } |
+    ForEach-Object {
+        Write-Host "  Stopping stale vite/PID $($_.ProcessId)"
+        Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue
+    }
+Start-Sleep -Seconds 1
 
 # ---- 4. Start backend -------------------------------------------------------
-Write-Step "Starting FastAPI backend on http://localhost:8000"
+Write-Step "Starting FastAPI backend on http://127.0.0.1:8000"
 $backend = Start-Process python -ArgumentList "api/run.py" -WorkingDirectory $Root `
-    -PassThru -NoNewWindow -RedirectStandardOutput "$Root\api_server.log" -RedirectStandardError "$Root\api_server_err.log"
+    -PassThru -WindowStyle Hidden -RedirectStandardOutput "$Root\api_server.log" -RedirectStandardError "$Root\api_server_err.log"
 Write-Host "  backend PID $($backend.Id) (logs: api_server.log / api_server_err.log)"
 
 # Wait for backend to accept connections
@@ -84,24 +91,23 @@ $backendUp = $false
 for ($i = 0; $i -lt 40; $i++) {
     if ($backend.HasExited) { throw "Backend exited early. Check api_server_err.log" }
     try {
-        $r = Invoke-WebRequest -Uri "http://localhost:8000/api/regime/current" -UseBasicParsing -TimeoutSec 2
+        $r = Invoke-WebRequest -Uri "http://127.0.0.1:8000/api/regime/current" -UseBasicParsing -TimeoutSec 2
         if ($r.StatusCode -eq 200) { $backendUp = $true; break }
     } catch { Start-Sleep -Milliseconds 500 }
 }
 if (-not $backendUp) { Write-Host "  (backend still warming up - continuing anyway)" }
 
 # ---- 5. Start frontend ------------------------------------------------------
-Write-Step "Starting Vite dev server on http://localhost:5173"
-$frontend = Start-Process npm.cmd -ArgumentList "run", "dev" -WorkingDirectory "$Root\frontend" `
-    -PassThru -NoNewWindow -RedirectStandardOutput "$Root\frontend\dev_server.log" -RedirectStandardError "$Root\frontend\dev_server_err.log"
-Write-Host "  frontend PID $($frontend.Id) (logs: frontend/dev_server.log)"
+Write-Step "Starting Vite dev server on http://127.0.0.1:5173"
+$frontend = Start-Process npm.cmd -ArgumentList "run", "dev", "--", "--host" -WorkingDirectory "$Root\frontend" `
+    -PassThru -WindowStyle Hidden
 
 # Wait for frontend
 $frontendUp = $false
 for ($i = 0; $i -lt 40; $i++) {
     if ($frontend.HasExited) { break }
     try {
-        $r = Invoke-WebRequest -Uri "http://localhost:5173" -UseBasicParsing -TimeoutSec 2
+        $r = Invoke-WebRequest -Uri "http://127.0.0.1:5173" -UseBasicParsing -TimeoutSec 2
         if ($r.StatusCode -eq 200) { $frontendUp = $true; break }
     } catch { Start-Sleep -Milliseconds 500 }
 }
@@ -110,14 +116,14 @@ for ($i = 0; $i -lt 40; $i++) {
 if ($frontendUp) {
     Write-Step "Dashboard ready"
     Write-Host ""
-    Write-Host "  Dashboard : http://localhost:5173"
-    Write-Host "  API docs  : http://localhost:8000/docs"
+    Write-Host "  Dashboard : http://127.0.0.1:5173"
+    Write-Host "  API docs  : http://127.0.0.1:8000/docs"
     Write-Host ""
-    Start-Process "http://localhost:5173"
+    Start-Process "http://127.0.0.1:5173"
     Write-Host "  Opened in your browser."
     Write-Host "  Press Ctrl+C to stop both servers.`n"
 } else {
-    Write-Host "  Frontend still starting - open http://localhost:5173 manually."
+    Write-Host "  Frontend still starting - open http://127.0.0.1:5173 manually."
 }
 
 # ---- 7. Keep alive until Ctrl+C --------------------------------------------
@@ -128,5 +134,14 @@ try {
     foreach ($p in @($backend, $frontend)) {
         if ($p -and -not $p.HasExited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
     }
+    # Kill by port so wrapper-nested child chains (npm -> node vite) can't orphan
+    foreach ($port in @(8000) + @(5173..5179)) {
+        Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue |
+            Select-Object -ExpandProperty OwningProcess -Unique |
+            ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }
+    }
+    Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -match 'vite' } |
+        ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
     Write-Host "Done."
 }
