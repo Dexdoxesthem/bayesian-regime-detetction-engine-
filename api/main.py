@@ -127,10 +127,36 @@ def _cached(key, builder):
 
 def _build_current():
     features = _load_features()
+    merged = _load_merged()
     models = _get_models(features)
+    
     last_probs = np.array(models["hmm_probs"][-1])
     regime_idx = int(np.argmax(last_probs))
     confidence = float(last_probs[regime_idx])
+
+    last_date = features.index[-1]
+    
+    # Safe get previous row for changes (if available)
+    if len(merged) > 1:
+        last_row = merged.iloc[-1]
+        prev_row = merged.iloc[-2]
+    else:
+        last_row = merged.iloc[-1]
+        prev_row = merged.iloc[-1]
+        
+    nifty = float(last_row.get("nifty50_close", 0))
+    nifty_prev = float(prev_row.get("nifty50_close", 1))
+    nifty_chg = ((nifty / nifty_prev) - 1) * 100 if nifty_prev else 0
+
+    vix = float(last_row.get("india_vix_close", 0))
+    vix_prev = float(prev_row.get("india_vix_close", 1))
+    vix_chg = ((vix / vix_prev) - 1) * 100 if vix_prev else 0
+
+    fii = float(last_row.get("fii_net", 0))
+    dii = float(last_row.get("dii_net", 0))
+    
+    # Using 50DMA breadth from features
+    breadth = float(features.loc[last_date].get("breadth_above_dma50", 0)) * 100
 
     return {
         "current_regime": regime_idx,
@@ -141,6 +167,13 @@ def _build_current():
             REGIME_LABELS[i]: round(float(last_probs[i]), 4) for i in range(5)
         },
         "date": models["dates"][-1],
+        "metrics": {
+            "nifty": {"value": round(nifty, 2), "change": round(nifty_chg, 2)},
+            "vix": {"value": round(vix, 2), "change": round(vix_chg, 2)},
+            "fii": {"value": round(fii, 2)},
+            "dii": {"value": round(dii, 2)},
+            "breadth": {"value": round(breadth, 2)}
+        }
     }
 
 

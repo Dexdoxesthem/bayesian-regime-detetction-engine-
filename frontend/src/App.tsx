@@ -23,7 +23,6 @@ const NAV_ITEMS: { id: View; label: string; icon: string }[] = [
 
 export default function App() {
   const [view, setView] = useState<View>('dashboard');
-  const [navOpen, setNavOpen] = useState(true);
   const mainRef = useRef<HTMLDivElement>(null);
 
   // Data
@@ -70,80 +69,61 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-bg-primary">
-      {/* Sidebar */}
-      <aside className={clsx(
-        'flex flex-col border-r border-border bg-bg-secondary transition-all duration-300',
-        navOpen ? 'w-64' : 'w-16',
-      )}>
+    <div className="flex flex-col min-h-screen bg-bg-primary text-text-primary">
+      {/* Top Navigation */}
+      <header className="h-16 border-b border-border bg-bg-card flex items-center px-8 shrink-0 shadow-sm z-10 sticky top-0">
         {/* Logo */}
-        <div className="h-16 flex items-center px-4 border-b border-border">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-sm shrink-0">
-              RE
-            </div>
-            {navOpen && (
-              <span className="text-sm font-semibold whitespace-nowrap">Regime Engine</span>
-            )}
+        <div className="flex items-center gap-3 mr-12">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-accent-dim flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
+            RE
           </div>
+          <span className="text-lg font-bold tracking-tight">Regime Engine</span>
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 py-4 space-y-1 px-2">
+        <nav className="flex-1 flex items-center gap-2">
           {NAV_ITEMS.map(item => (
             <button
               key={item.id}
               onClick={() => switchView(item.id)}
               className={clsx(
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all',
+                'px-4 py-2 rounded-full text-sm font-medium transition-all',
                 view === item.id
-                  ? 'bg-accent/10 text-accent'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-hover',
+                  ? 'bg-text-primary text-white shadow-sm'
+                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary',
               )}
             >
-              <span className="text-lg shrink-0 w-6 text-center">{item.icon}</span>
-              {navOpen && <span className="whitespace-nowrap">{item.label}</span>}
+              {item.label}
             </button>
           ))}
         </nav>
 
-        {/* Status */}
-        <div className="p-4 border-t border-border">
-          {navOpen && current && (
-            <div className="bg-bg-card rounded-lg p-3">
-              <div className="text-xs font-mono text-text-muted uppercase tracking-wider">Live Regime</div>
-              <div className="text-lg font-bold mt-1" style={{ color: current.regime_color }}>
-                {current.regime_label}
+        {/* Right side status / user */}
+        <div className="flex items-center gap-4 border-l border-border pl-6 ml-6">
+          {current && (
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div className="text-xs font-semibold" style={{ color: current.regime_color }}>
+                  {current.regime_label}
+                </div>
+                <div className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
+                  Live Status
+                </div>
               </div>
-              <div className="text-xs font-mono text-text-secondary">
-                {(current.confidence * 100).toFixed(1)}% · {current.date}
+              <div 
+                className="w-8 h-8 rounded-full border-2 flex items-center justify-center"
+                style={{ borderColor: current.regime_color, backgroundColor: current.regime_color + '15' }}
+              >
+                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: current.regime_color }} />
               </div>
             </div>
           )}
-          <button
-            onClick={() => setNavOpen(!navOpen)}
-            className="mt-2 w-full text-center text-text-muted hover:text-text-secondary text-xs font-mono"
-          >
-            {navOpen ? '◂ collapse' : '▸'}
-          </button>
         </div>
-      </aside>
+      </header>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        {/* Top Bar */}
-        <header className="h-16 border-b border-border flex items-center justify-between px-8 bg-bg-secondary/50 backdrop-blur-sm sticky top-0 z-10">
-          <div className="text-sm font-mono text-text-secondary">
-            Bayesian Regime Detection · Indian Equity Markets
-          </div>
-          <div className="flex items-center gap-4 text-xs font-mono text-text-muted">
-            <span>Python 3.14 · PyTorch 2.13 · PyMC 6.3</span>
-            <div className="w-2 h-2 rounded-full bg-green animate-pulse" />
-          </div>
-        </header>
-
-        {/* Content */}
-        <div ref={mainRef} className="p-8">
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-8">
+        <div ref={mainRef}>
           {renderView()}
         </div>
       </main>

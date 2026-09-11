@@ -13,6 +13,13 @@ export interface RegimeCurrent {
   confidence: number;
   probabilities: Record<string, number>;
   date: string;
+  metrics: {
+    nifty: { value: number; change: number };
+    vix: { value: number; change: number };
+    fii: { value: number };
+    dii: { value: number };
+    breadth: { value: number };
+  };
 }
 
 export interface RegimeHistory {
