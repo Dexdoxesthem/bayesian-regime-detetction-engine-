@@ -206,24 +206,18 @@ def compute_breadth_features(df: pd.DataFrame) -> pd.DataFrame:
         prefix: df[f"{prefix}_close"].pct_change()
         for prefix in ["nifty50", "nifty_midcap", "nifty_bank"]
     })
-    # Average pairwise correlation
-    features["cross_index_corr_63d"] = returns.rolling(63, min_periods=42).corr().groupby(level=0).mean().mean(axis=1)
-    # Fix the index alignment
+    
+    # Calculate rolling correlation
     rolling_corr = returns.rolling(63, min_periods=42).corr()
-    avg_corr = []
-    for date in returns.index:
-        try:
-            sub = rolling_corr.loc[date]
-            if isinstance(sub, pd.DataFrame) and sub.shape == (3, 3):
-                # Average off-diagonal
-                mask = np.ones(sub.shape, dtype=bool)
-                np.fill_diagonal(mask, False)
-                avg_corr.append(sub.values[mask].mean())
-            else:
-                avg_corr.append(np.nan)
-        except:
-            avg_corr.append(np.nan)
-    features["cross_index_corr_63d"] = avg_corr
+    
+    # Unstack the MultiIndex to have shape (dates, assets * assets)
+    unstacked_corr = rolling_corr.unstack()
+    
+    # Filter for off-diagonal columns (where asset1 != asset2)
+    off_diag_cols = [col for col in unstacked_corr.columns if col[0] != col[1]]
+    
+    # Compute the row-wise mean for the off-diagonal elements
+    features["cross_index_corr_63d"] = unstacked_corr[off_diag_cols].mean(axis=1)
 
     return features
 

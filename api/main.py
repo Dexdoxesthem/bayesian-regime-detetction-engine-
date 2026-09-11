@@ -80,16 +80,21 @@ def _run_models(features):
     avail_bdl = [f for f in bdl_features if f in features.columns]
     X_bdl = features[avail_bdl].values
     valid_bdl = ~np.isnan(X_bdl).any(axis=1)
-    X_bdl_clean = X_bdl[valid_bdl]
+    
+    # Inference data
+    X_bdl_infer = X_bdl[valid_bdl]
     bdl_dates = features.index[valid_bdl]
-
-    fwd_ret = features["nifty50_return_1d"].rolling(21).mean().fillna(0)
-    y_labels = pd.qcut(fwd_ret, q=5, labels=[0, 1, 2, 3, 4], duplicates="drop").values.astype(int)
-    y_bdl = y_labels[valid_bdl]
+    
+    # Training data labels (21-day forward return)
+    fwd_ret = features["nifty50_return_21d"].shift(-21)
+    train_mask = valid_bdl & ~fwd_ret.isna()
+    X_bdl_train = X_bdl[train_mask]
+    
+    y_labels = pd.qcut(fwd_ret[train_mask], q=5, labels=[0, 1, 2, 3, 4], duplicates="drop").values.astype(int)
 
     de = DeepEnsemble(M=3, input_dim=X_bdl.shape[1], n_classes=5, hidden_dims=(32, 16), n_epochs=50, batch_size=128)
-    de.fit(X_bdl_clean, y_bdl)
-    de_probs, de_epist = de.predict_with_uncertainty(X_bdl_clean)
+    de.fit(X_bdl_train, y_labels)
+    de_probs, de_epist = de.predict_with_uncertainty(X_bdl_infer)
 
     hmm_idx = pd.Series(range(len(dates)), index=dates)
     de_idx = pd.Series(range(len(bdl_dates)), index=bdl_dates)

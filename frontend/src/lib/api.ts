@@ -1,4 +1,4 @@
-export const API_BASE = '/api';
+export const API_BASE = '';
 
 export async function fetchJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`);

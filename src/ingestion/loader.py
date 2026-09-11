@@ -109,7 +109,9 @@ def fetch_yfinance_data(
         raise ValueError(f"No data returned for {ticker} ({source_name})")
 
     # Normalise columns
-    df.index = pd.to_datetime(df.index).tz_localize(None)
+    df.index = pd.to_datetime(df.index)
+    if df.index.tz is not None:
+        df.index = df.index.tz_localize(None)
     df.index.name = "date"
     df = df[["Open", "High", "Low", "Close", "Volume"]].copy()
     df.columns = ["open", "high", "low", "close", "volume"]
