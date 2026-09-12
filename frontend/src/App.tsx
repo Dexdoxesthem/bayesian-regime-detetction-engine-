@@ -69,55 +69,62 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-primary text-text-primary">
-      {/* Top Navigation */}
-      <header className="h-16 border-b border-border bg-bg-card flex items-center px-8 shrink-0 shadow-sm z-10 sticky top-0">
-        {/* Logo */}
-        <div className="flex items-center gap-3 mr-12">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-accent-dim flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
-            RE
-          </div>
-          <span className="text-lg font-bold tracking-tight">Regime Engine</span>
-        </div>
-
-        {/* Nav Items */}
-        <nav className="flex-1 flex items-center gap-2">
-          {NAV_ITEMS.map(item => (
-            <button
-              key={item.id}
-              onClick={() => switchView(item.id)}
-              className={clsx(
-                'px-4 py-2 rounded-full text-sm font-medium transition-all',
-                view === item.id
-                  ? 'bg-text-primary text-white shadow-sm'
-                  : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary',
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Right side status / user */}
-        <div className="flex items-center gap-4 border-l border-border pl-6 ml-6">
-          {current && (
-            <div className="flex items-center gap-3">
-              <div className="text-right">
-                <div className="text-xs font-semibold" style={{ color: current.regime_color }}>
-                  {current.regime_label}
-                </div>
-                <div className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
-                  Live Status
-                </div>
+    <div className="min-h-screen flex flex-col font-sans bg-bg-primary text-text-primary">
+      
+      {/* Top Navigation Bar */}
+      <header className="sticky top-0 z-50 bg-bg-card border-b border-border shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 mr-6">
+              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white font-bold text-lg font-serif">
+                Z
               </div>
-              <div 
-                className="w-8 h-8 rounded-full border-2 flex items-center justify-center"
-                style={{ borderColor: current.regime_color, backgroundColor: current.regime_color + '15' }}
-              >
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: current.regime_color }} />
-              </div>
+              <span className="font-serif font-semibold text-lg tracking-tight text-text-primary">
+                Zetheta Regime Engine
+              </span>
             </div>
-          )}
+
+            {/* Nav Items */}
+            <nav className="hidden md:flex items-center gap-2">
+              {NAV_ITEMS.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => switchView(item.id)}
+                  className={clsx(
+                    'px-4 py-1.5 rounded-md text-sm font-medium transition-all',
+                    view === item.id
+                      ? 'bg-text-primary text-white shadow-sm'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary',
+                  )}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Right side status / user */}
+          <div className="flex items-center gap-4">
+            {current && (
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-xs font-semibold" style={{ color: current.regime_color }}>
+                    {current.regime_label}
+                  </div>
+                  <div className="text-[10px] text-text-muted font-mono uppercase tracking-wider">
+                    Live Status
+                  </div>
+                </div>
+                <div 
+                  className="w-8 h-8 rounded-full border-2 flex items-center justify-center"
+                  style={{ borderColor: current.regime_color, backgroundColor: current.regime_color + '15' }}
+                >
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: current.regime_color }} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

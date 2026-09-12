@@ -38,7 +38,7 @@ export default function Dashboard({ current }: Props) {
       
       {/* Page Title */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
+        <h1 className="text-3xl font-bold font-serif tracking-tight">Overview</h1>
         <div className="flex gap-2">
           <div className="px-3 py-1.5 bg-bg-card rounded-md border border-border text-xs font-semibold text-text-secondary">
             {current.date}
@@ -54,7 +54,7 @@ export default function Dashboard({ current }: Props) {
         {/* Main Regime Probabilities Card (Like "Payments" chart in Zentra) */}
         <div className="lg:col-span-2 bg-bg-card border border-border rounded-2xl p-8 shadow-[var(--shadow-card)] flex flex-col">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold">Regime Probabilities</h2>
+            <h2 className="text-xl font-bold font-serif">Regime Probabilities</h2>
             <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:bg-bg-secondary">
               ⋯
             </button>
@@ -66,7 +66,7 @@ export default function Dashboard({ current }: Props) {
               return (
                 <div key={label} className="flex items-center gap-4">
                   <div className="w-32 text-sm font-semibold text-right shrink-0"
-                    style={{ color: isActive ? '#111827' : '#9ca3af' }}>
+                    style={{ color: isActive ? '#1c1c1a' : '#8c8c88' }}>
                     {label}
                   </div>
                   <div className="flex-1 h-10 bg-bg-secondary rounded-lg overflow-hidden relative">
@@ -75,11 +75,11 @@ export default function Dashboard({ current }: Props) {
                         width: `${Math.max(prob * 100, 2)}%`,
                         background: isActive
                           ? `linear-gradient(90deg, ${REGIME_COLORS[i]}cc, ${REGIME_COLORS[i]})`
-                          : `#d1d5db`,
+                          : `#dcdcd8`,
                       }} />
                   </div>
-                  <div className="w-16 text-sm font-bold shrink-0 text-right"
-                    style={{ color: isActive ? REGIME_COLORS[i] : '#9ca3af' }}>
+                  <div className="w-16 text-sm font-bold shrink-0 text-right font-mono"
+                    style={{ color: isActive ? REGIME_COLORS[i] : '#8c8c88' }}>
                     {(prob * 100).toFixed(1)}%
                   </div>
                 </div>
@@ -98,11 +98,11 @@ export default function Dashboard({ current }: Props) {
           {/* Nifty Metric Card */}
           <div className="bg-bg-card border border-border rounded-2xl p-6 shadow-[var(--shadow-card)]">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold">Nifty 50</h3>
+              <h3 className="text-lg font-bold font-serif">Nifty 50</h3>
               <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:bg-bg-secondary">⋯</button>
             </div>
             <div className="flex items-baseline gap-3 mb-6">
-              <span className="text-4xl font-extrabold tracking-tight">
+              <span className="text-4xl font-bold font-serif tracking-tight">
                 {current.metrics.nifty.value.toLocaleString()}
               </span>
               <span className={clsx(
@@ -127,10 +127,10 @@ export default function Dashboard({ current }: Props) {
           <div className="bg-bg-card border border-border rounded-2xl p-6 shadow-[var(--shadow-card)] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-bold">India VIX</h3>
+                <h3 className="text-lg font-bold font-serif">India VIX</h3>
                 <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:bg-bg-secondary">⋯</button>
               </div>
-              <div className="text-3xl font-extrabold tracking-tight">
+              <div className="text-3xl font-bold font-serif tracking-tight">
                 {current.metrics.vix.value.toFixed(2)}
               </div>
             </div>
@@ -148,19 +148,19 @@ export default function Dashboard({ current }: Props) {
         {/* Flow Metrics */}
         <div className="bg-bg-card border border-border rounded-2xl p-6 shadow-[var(--shadow-card)]">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold">Institutional Flows</h3>
+            <h3 className="text-lg font-bold font-serif">Institutional Flows</h3>
             <button className="w-8 h-8 rounded-full border border-border flex items-center justify-center text-text-muted hover:bg-bg-secondary">⋯</button>
           </div>
           <div className="space-y-6">
             <div>
               <div className="text-sm font-medium text-text-secondary mb-1">FII Net</div>
-              <div className={clsx("text-2xl font-bold", current.metrics.fii.value >= 0 ? 'text-green' : 'text-red')}>
+              <div className={clsx("text-2xl font-bold font-serif", current.metrics.fii.value >= 0 ? 'text-green' : 'text-red')}>
                 {current.metrics.fii.value > 0 ? '+' : ''}{Math.round(current.metrics.fii.value).toLocaleString()} Cr
               </div>
             </div>
             <div>
               <div className="text-sm font-medium text-text-secondary mb-1">DII Net</div>
-              <div className={clsx("text-2xl font-bold", current.metrics.dii.value >= 0 ? 'text-green' : 'text-red')}>
+              <div className={clsx("text-2xl font-bold font-serif", current.metrics.dii.value >= 0 ? 'text-green' : 'text-red')}>
                 {current.metrics.dii.value > 0 ? '+' : ''}{Math.round(current.metrics.dii.value).toLocaleString()} Cr
               </div>
             </div>
@@ -169,18 +169,18 @@ export default function Dashboard({ current }: Props) {
 
         {/* Gradient Insights Card */}
         <div className="lg:col-span-2 rounded-2xl p-8 text-white relative overflow-hidden shadow-[var(--shadow-card)]"
-             style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #a855f7 100%)' }}>
+             style={{ background: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)' }}>
           {/* Decorative abstract shape */}
-          <div className="absolute right-0 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute right-0 top-0 w-64 h-64 bg-white/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
           
-          <div className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-xs font-semibold backdrop-blur-md mb-6">
-            💡 Insights
+          <div className="inline-flex items-center gap-1 px-3 py-1 bg-white/10 border border-white/20 rounded-full text-xs font-semibold backdrop-blur-md mb-6">
+            <span className="font-serif italic">Insight</span>
           </div>
           
-          <div className="text-5xl font-bold mb-4 tracking-tight">
+          <div className="text-5xl font-bold font-serif mb-4 tracking-tight">
             {(current.confidence * 100).toFixed(0)}%
           </div>
-          <h3 className="text-xl font-bold mb-2">
+          <h3 className="text-xl font-bold font-serif mb-2">
             Model confidence in {current.regime_label} regime.
           </h3>
           <p className="text-white/80 max-w-lg leading-relaxed text-sm font-medium">

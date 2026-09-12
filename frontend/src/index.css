@@ -1,22 +1,26 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
 @theme {
-  --color-bg-primary: #f9fafb;
-  --color-bg-secondary: #f3f4f6;
+  --color-bg-primary: #fdfdfc;
+  --color-bg-secondary: #f4f4f0;
   --color-bg-card: #ffffff;
-  --color-bg-hover: #e5e7eb;
-  --color-border: #e5e7eb;
-  --color-border-light: #f3f4f6;
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-muted: #9ca3af;
-  --color-accent: #2563eb;
-  --color-accent-dim: #3b82f6;
-  --color-green: #10b981;
-  --color-red: #ef4444;
-  --color-amber: #f59e0b;
-  --color-cyan: #06b6d4;
-  --color-purple: #8b5cf6;
+  --color-bg-hover: #eaeae5;
+  --color-border: #e2e2dd;
+  --color-border-light: #f0f0eb;
+  --color-text-primary: #1c1c1a;
+  --color-text-secondary: #52524f;
+  --color-text-muted: #8c8c88;
+  --color-accent: #0f172a;
+  --color-accent-dim: #334155;
+  --color-green: #059669;
+  --color-red: #dc2626;
+  --color-amber: #d97706;
+  --color-cyan: #0891b2;
+  --color-purple: #4f46e5;
+  --font-serif: 'Lora', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
 }
 
@@ -24,7 +28,7 @@ body {
   margin: 0;
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
